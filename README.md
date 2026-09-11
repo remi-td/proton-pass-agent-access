@@ -16,7 +16,7 @@ A security-first, cross-agent `SKILL.md` for using a named Proton Pass login in 
 ### Hermes Agent
 
 ```bash
-hermes skills install https://github.com/remi-td/proton-pass-agent-access/tree/main
+hermes skills install https://raw.githubusercontent.com/remi-td/proton-pass-agent-access/main/SKILL.md
 ```
 
 ### skills.sh-compatible agents
