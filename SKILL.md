@@ -68,7 +68,18 @@ The user should create an agent/PAT from an interactive Proton Pass session, set
 
 Store the token in a `0600` file owned by the dedicated service account that consumes it, never in shell startup files, source code, cron prompts, or a general `.env` file. Use a dedicated `PROTON_PASS_SESSION_DIR` with `0700` permissions.
 
-The agent session is short-lived. Before a task, test it with `pass-cli info`; if expired, refresh it from the separately protected token file without printing either token or account metadata.
+### Profile token-location convention
+
+Make the token discoverable without ever placing its value in an environment file. Define these two **path-only** variables in the active Hermes profile environment file (`$HERMES_HOME/.env` for the default profile; `~/.hermes/profiles/<profile>/.env` for a named profile):
+
+```bash
+PROTON_PASS_PAT_FILE=/srv/hermes/.config/proton-pass/<profile-or-purpose>.pat
+PROTON_PASS_SESSION_DIR=/srv/hermes/.local/state/proton-pass/<profile-or-purpose>-session
+```
+
+`PROTON_PASS_PAT_FILE` points to one raw `pst_...::...` token file; that token value stays in its `0600` file and must never be copied into `.env`. `PROTON_PASS_SESSION_DIR` is the matching `0700` session directory. A wrapper must read the PAT file at runtime and set `PROTON_PASS_PERSONAL_ACCESS_TOKEN` only in its child process environment. Do not use a hard-coded token path: resolve these two variables first and fail closed if either is absent or has unsafe permissions.
+
+The agent session is short-lived. Before a task, test it with `pass-cli info`; if absent or expired, initialise it from `PROTON_PASS_PAT_FILE` without printing either the token or account metadata.
 
 ## Named Login Retrieval Workflow
 
